@@ -2,8 +2,34 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#9ff1ff"
-    android:orientation="vertical" >
+    android:background="#9ff1ff">
+
+    <Button
+        android:id="@+id/btnPush"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnPush3"
+        android:text="Equalizer"/>
+
+    <Button
+        android:id="@+id/btnPush2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match Reminder"/>
+
+    <Button
+        android:id="@+id/btnPush3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnPush2"
+        android:text="Goal"/>
+
+    <Button
+        android:id="@+id/btnPush4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnPush"
+        android:text="Match End"/>
 
 
 </RelativeLayout>

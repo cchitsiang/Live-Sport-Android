@@ -1,41 +1,42 @@
 package example.com.myapppluswear.fragments;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import android.app.Dialog;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Button;
 
-import com.commonsware.cwac.merge.MergeAdapter;
+import example.com.myapppluswear.MainActivity;
+import example.com.myapppluswear.Notifications;
 import example.com.myapppluswear.R;
-import example.com.myapppluswear.interfaces.ViewActivity;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import example.com.myapppluswear.ViewActivity;
 
 public class DashboardsFragment extends Fragment {
 
+    final static String GROUP_KEY_EMAILS = "group_key_emails";
+
+    private String SENDER_ID = "1049668455499";
+    //private GoogleCloudMessaging gcm;
+    //private NotificationHub hub;
+    private Notifications notifications;
+    private Button btn_push;
+    private Button btn_push2;
+    private Button btn_push3;
+    private Button btn_push4;
+
+    NotificationManager mNotificationManager;
 	public DashboardsFragment() {
 	}
 
@@ -47,6 +48,73 @@ public class DashboardsFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
+        btn_push = (Button)v.findViewById(R.id.btnPush);
+        btn_push2 = (Button)v.findViewById(R.id.btnPush2);
+        btn_push3 = (Button)v.findViewById(R.id.btnPush3);
+        btn_push4 = (Button)v.findViewById(R.id.btnPush4);
+
+
+        btn_push.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //selfPushNotification("Equalizer!!!");
+                testPushNotification("Equalizer!!!", "Arteta just scored a penalty!", R.drawable.minutes);
+            }
+        });
+
+        btn_push2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testPushNotification("Match going to start in 15 mins.", "Kick off at 11.00 p.m.", R.drawable.arsvsliv2);
+            }
+        });
+
+        btn_push3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testPushNotification("Suarez just scored. :(", "Liverpool is leading now...", R.drawable.zeroone);
+            }
+        });
+
+
+        btn_push4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testPushNotification("Match ended with 1-1.", "Not too shabby right mate?", R.drawable.arsvslivend);
+            }
+        });
+
+
+		return v;
+
+
+	}
+
+    private void testPushNotification(String title, String description, int id)
+    {
+        int NOTIFICATION_ID =1;
+        mNotificationManager = (NotificationManager)
+                getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(getActivity(), 0,
+                new Intent(getActivity(), MainActivity.class), 0);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getActivity())
+                        .setSmallIcon(R.drawable.wearablelogo)
+                        .setContentTitle(title)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
+                        .setContentText(description)
+                        .extend(new NotificationCompat.WearableExtender().setBackground(BitmapFactory.decodeResource(getActivity().getResources(), id)))
+                        .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
+
+
+        mBuilder.setContentIntent(contentIntent);
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private void selfPushNotification(String title)
+    {
         int notificationId = 1;
         // Build intent for notification content
         Intent viewIntent = new Intent(getActivity(), ViewActivity.class);
@@ -83,8 +151,8 @@ public class DashboardsFragment extends Fragment {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(getActivity())
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Status")
-                        .setContentText("I'm at a bus stop!")
+                        .setContentTitle(title)
+                        .setContentText("Manchester United mu - 0 Manchester City")
                         .addAction(R.drawable.ic_launcher, "Open Main", viewPendingIntent)
                         .extend(new NotificationCompat.WearableExtender().addAction(wearableAction).addPage(secondPageNotification).setBackground(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher)))
                         .setStyle(bigStyle)
@@ -97,10 +165,15 @@ public class DashboardsFragment extends Fragment {
         // Build the notification and issues it with notification manager.
         notificationManager.notify(notificationId, notificationBuilder.build());
         notificationManager.notify(2, thirdPageNotification);
-		return v;
+    }
 
-	}
+    public void subscribe() {
+        final Set<String> categories = new HashSet<String>();
 
+        categories.add("sports");
+
+        notifications.storeCategoriesAndSubscribe(categories);
+    }
 
 
 	public void onActivityCreated(Bundle savedInstanceState) {

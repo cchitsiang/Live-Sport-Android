@@ -9,6 +9,7 @@ import java.util.Map;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -39,6 +40,8 @@ import example.com.myapppluswear.R;
 import example.com.myapppluswear.fragments.DashboardsFragment;
 import example.com.myapppluswear.interfaces.OnSlidingMenuListItemClicked;
 import example.com.myapppluswear.SlidingMenuListFragment;
+
+import com.microsoft.windowsazure.notifications.NotificationsManager;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
@@ -50,6 +53,12 @@ public class MainActivity extends SlidingFragmentActivity {
     final List<Map<String, ?>> myAccount = new LinkedList<Map<String, ?>>();
     final List<Map<String, ?>> featureList = new LinkedList<Map<String, ?>>();
 
+    private String SENDER_ID = "1049668455499";
+    //private GoogleCloudMessaging gcm;
+    //private NotificationHub hub;
+    private Notifications notifications;
+
+    NotificationManager mNotificationManager;
     private OnSlidingMenuListItemClicked slidingMenuListItemClicked = new OnSlidingMenuListItemClicked() {
         @Override
         public void onSlidingMenuListItemClicked() {
@@ -106,6 +115,18 @@ public class MainActivity extends SlidingFragmentActivity {
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getActionBar().setHomeButtonEnabled(true);
 
+
+        NotificationsManager.handleNotifications(this, SENDER_ID, NotificationHandler.class);
+       // Intent intent = new Intent(this, GcmIntentService.class);
+       // startService(intent);
+        //gcm = GoogleCloudMessaging.getInstance(this);
+
+        //"live-sport", "Endpoint=sb://live-sport.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=9hPtVm2Uyi7Bl0D1hUtID3DYCYSDiTz7vmiXd7oPavc="
+        //String connectionString = "<your listen access connection string>";
+        //hub = new NotificationHub("<your notification hub name>", connectionString, this);
+
+        notifications = new Notifications(this, SENDER_ID);
+        notifications.subscribeToCategories(notifications.retrieveCategories());
 
         FragmentTransaction d_fragment = this.getSupportFragmentManager()
                 .beginTransaction();
